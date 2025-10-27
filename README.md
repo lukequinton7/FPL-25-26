@@ -1,7 +1,7 @@
-# gpt-oss-20b-testing
+# FPL Model
 
-A simple repository for running tests and experiments on the `gpt-oss 20b` model.
+A model for team selection based on upcoming fixtures and historical player form
 
 ## Status
 
-🧪 **Work in Progress** - Just a sandbox for exploration.
+-importing current player stats csv 
