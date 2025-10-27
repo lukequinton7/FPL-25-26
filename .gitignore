@@ -1,0 +1,12 @@
+# VS Code settings
+.vscode/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Common environment folder names
+.env/
+.venv/
+env/
+venv/
