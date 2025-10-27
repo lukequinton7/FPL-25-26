@@ -90,7 +90,7 @@ def calculate_attack_score(df_table, df_unplayed, num_games):
             avg_opponent_gc = pd.Series(opponent_gc_scores).mean()
             
             if avg_opponent_gc > 0:
-                final_score = (0.4 * team_gs_score + 0.6 * avg_opponent_gc)
+                final_score = (0.5 * team_gs_score + 0.5 * avg_opponent_gc)
                 
         all_difficulty_scores.append(final_score)
         all_avg_opponent_gc.append(avg_opponent_gc) 
@@ -142,7 +142,7 @@ def calculate_defense_score(df_table, df_unplayed, num_games):
                 
                 counter += 1
                 
-                if counter == num_games: # <-- Use the input parameter
+                if counter == num_games: 
                     break 
         
         # --- After the inner loop ---
@@ -175,14 +175,14 @@ df_table = prem_table()
 df_unplayed = df_fixtures[df_fixtures['HomeTeamScore'].isna()].copy() #take unplayed fixture from all fixtures table
 
 
-# --- 2. Set how many games to look ahead ---
-GAMES_TO_CHECK = 1 # You can change this to 4, 5, 6, etc.
+# --- Parameters ---
+GAMES_TO_CHECK = 1 
 
-# --- 3. Call the functions ---
+# --- Call tables ---
 df_table = calculate_attack_score(df_table, df_unplayed, num_games=GAMES_TO_CHECK)
 df_table = calculate_defense_score(df_table, df_unplayed, num_games=GAMES_TO_CHECK)
 
-# --- 4. Show the final results ---
+# ---table prints---
 print("\n\n--- Final Attack Scores ---")
 print(df_table[['HomeTeam', 'GS_score', 'Opponent_GC_Avg', 'Attack Score']].sort_values(by='Attack Score', ascending=False))
 
