@@ -71,10 +71,13 @@ def calculate_attack_score(df_table, df_unplayed, num_games):
                 opponent = ""
                 if fixture['HomeTeam'] == team:
                     opponent = fixture['AwayTeam']
+                    opponent_gc = opponent_concede_map.get(opponent) * 1.1
+
                 else:
                     opponent = fixture['HomeTeam']
+                    opponent_gc = opponent_concede_map.get(opponent) * 0.9
                 
-                opponent_gc = opponent_concede_map.get(opponent)
+                #opponent_gc = opponent_concede_map.get(opponent)
                 opponent_gc_scores.append(opponent_gc)
                 
                 counter += 1
@@ -90,7 +93,7 @@ def calculate_attack_score(df_table, df_unplayed, num_games):
             avg_opponent_gc = pd.Series(opponent_gc_scores).mean()
             
             if avg_opponent_gc > 0:
-                final_score = (0.5 * team_gs_score + 0.5 * avg_opponent_gc)
+                final_score = (0.35 * team_gs_score + 0.65 * avg_opponent_gc)
                 
         all_difficulty_scores.append(final_score)
         all_avg_opponent_gc.append(avg_opponent_gc) 
@@ -134,10 +137,12 @@ def calculate_defense_score(df_table, df_unplayed, num_games):
                 opponent = ""
                 if fixture['HomeTeam'] == team:
                     opponent = fixture['AwayTeam']
+                    opponent_gs = opponent_attack_map.get(opponent) * 0.9
                 else:
                     opponent = fixture['HomeTeam']
+                    opponent_gs = opponent_attack_map.get(opponent) * 1.1
                 
-                opponent_gs = opponent_attack_map.get(opponent) 
+                #opponent_gs = opponent_attack_map.get(opponent) 
                 opponent_gs_scores.append(opponent_gs) 
                 
                 counter += 1
@@ -153,8 +158,7 @@ def calculate_defense_score(df_table, df_unplayed, num_games):
             avg_opponent_gs = pd.Series(opponent_gs_scores).mean() 
             
             if avg_opponent_gs > 0:
-                combined_score = (0.5 * team_gc_score) + (0.5 * avg_opponent_gs)
-                final_score = 1 / combined_score 
+                final_score = (0.35 * team_gc_score) + (0.65 * avg_opponent_gs)
                 
         all_defense_scores.append(final_score)
         all_avg_opponent_gs.append(avg_opponent_gs) 
@@ -176,7 +180,7 @@ df_unplayed = df_fixtures[df_fixtures['HomeTeamScore'].isna()].copy() #take unpl
 
 
 # --- Parameters ---
-GAMES_TO_CHECK = 1 
+GAMES_TO_CHECK = 5
 
 # --- Call tables ---
 df_table = calculate_attack_score(df_table, df_unplayed, num_games=GAMES_TO_CHECK)
