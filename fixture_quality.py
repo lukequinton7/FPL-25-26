@@ -38,7 +38,7 @@ def prem_table():
  
     return df_table
 
-print(prem_table())
+
 
 
 
@@ -71,11 +71,11 @@ def calculate_attack_score(df_table, df_unplayed, num_games):
                 opponent = ""
                 if fixture['HomeTeam'] == team:
                     opponent = fixture['AwayTeam']
-                    opponent_gc = opponent_concede_map.get(opponent) * 1.1
+                    opponent_gc = opponent_concede_map.get(opponent) * 1.15
 
                 else:
                     opponent = fixture['HomeTeam']
-                    opponent_gc = opponent_concede_map.get(opponent) * 0.9
+                    opponent_gc = opponent_concede_map.get(opponent) * 0.85
                 
                 #opponent_gc = opponent_concede_map.get(opponent)
                 opponent_gc_scores.append(opponent_gc)
@@ -93,18 +93,22 @@ def calculate_attack_score(df_table, df_unplayed, num_games):
             avg_opponent_gc = pd.Series(opponent_gc_scores).mean()
             
             if avg_opponent_gc > 0:
-                final_score = (0.35 * team_gs_score + 0.65 * avg_opponent_gc)
+                final_score = (0.00 * team_gs_score + 1.00 * avg_opponent_gc)
                 
         all_difficulty_scores.append(final_score)
         all_avg_opponent_gc.append(avg_opponent_gc) 
 
     # --- Add new columns to the table ---
     df_table['Attack Score'] = all_difficulty_scores
-    df_table['Opponent_GC_Avg'] = all_avg_opponent_gc 
+    df_table['Opponent_GC_Avg'] = all_avg_opponent_gc
+
+    scale_factor =  (df_table['Attack Score'] - df_table['Attack Score'].min()) / (df_table['Attack Score'].max() - df_table['Attack Score'].min())
+    df_table['Attack multiplier'] = 0.75 + (0.5* scale_factor)
 
     # Round the new columns
     df_table['Attack Score'] = df_table['Attack Score'].round(2)
-    df_table['Opponent_GC_Avg'] = df_table['Opponent_GC_Avg'].round(2) 
+    df_table['Opponent_GC_Avg'] = df_table['Opponent_GC_Avg'].round(2)
+    df_table['Attack multiplier'] = df_table['Attack multiplier'].round(2)
     
     return df_table
 
@@ -137,10 +141,10 @@ def calculate_defense_score(df_table, df_unplayed, num_games):
                 opponent = ""
                 if fixture['HomeTeam'] == team:
                     opponent = fixture['AwayTeam']
-                    opponent_gs = opponent_attack_map.get(opponent) * 0.9
+                    opponent_gs = opponent_attack_map.get(opponent) * 0.85
                 else:
                     opponent = fixture['HomeTeam']
-                    opponent_gs = opponent_attack_map.get(opponent) * 1.1
+                    opponent_gs = opponent_attack_map.get(opponent) * 1.15
                 
                 #opponent_gs = opponent_attack_map.get(opponent) 
                 opponent_gs_scores.append(opponent_gs) 
@@ -158,37 +162,23 @@ def calculate_defense_score(df_table, df_unplayed, num_games):
             avg_opponent_gs = pd.Series(opponent_gs_scores).mean() 
             
             if avg_opponent_gs > 0:
-                final_score = (0.35 * team_gc_score) + (0.65 * avg_opponent_gs)
+                final_score = (0.0 * team_gc_score) + (1.0 * avg_opponent_gs)
                 
         all_defense_scores.append(final_score)
         all_avg_opponent_gs.append(avg_opponent_gs) 
 
     # --- Add new columns to the table ---
     df_table['Defense Score'] = all_defense_scores
-    df_table['Opponent_GS_Avg'] = all_avg_opponent_gs 
+    df_table['Opponent_GS_Avg'] = all_avg_opponent_gs
+
+    scale_factor_d =  (df_table['Defense Score'].max() - df_table['Defense Score']) / (df_table['Defense Score'].max() - df_table['Defense Score'].min())
+    df_table['Defense multiplier'] = 0.75 + (0.5* scale_factor_d)
+    
 
     # Round the new columns
     df_table['Defense Score'] = df_table['Defense Score'].round(2)
-    df_table['Opponent_GS_Avg'] = df_table['Opponent_GS_Avg'].round(2) 
+    df_table['Opponent_GS_Avg'] = df_table['Opponent_GS_Avg'].round(2)
+    df_table['Defense multiplier'] = df_table['Defense multiplier'].round(2)
 
     return df_table
 
-
-# ---  setup (unchanged) ---
-df_table = prem_table()
-df_unplayed = df_fixtures[df_fixtures['HomeTeamScore'].isna()].copy() #take unplayed fixture from all fixtures table
-
-
-# --- Parameters ---
-GAMES_TO_CHECK = 5
-
-# --- Call tables ---
-df_table = calculate_attack_score(df_table, df_unplayed, num_games=GAMES_TO_CHECK)
-df_table = calculate_defense_score(df_table, df_unplayed, num_games=GAMES_TO_CHECK)
-
-# ---table prints---
-print("\n\n--- Final Attack Scores ---")
-print(df_table[['HomeTeam', 'GS_score', 'Opponent_GC_Avg', 'Attack Score']].sort_values(by='Attack Score', ascending=False))
-
-print("\n\n--- Final Defense Scores ---")
-print(df_table[['HomeTeam', 'GS_concede', 'Opponent_GS_Avg', 'Defense Score']].sort_values(by='Defense Score', ascending=False))
