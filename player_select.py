@@ -4,7 +4,15 @@ import pandas as pd
 
 #config
 gameweek = 10
-GAMES_TO_CHECK = 1
+GAMES_TO_CHECK = 5
+form_weight = 0.2
+
+
+threat_weight = 0.6
+creativity_weight = 0.4
+
+team_val = 100
+
 
 
 
@@ -32,10 +40,34 @@ df_defense = fq.calculate_defense_score(df_table, df_unplayed, num_games=GAMES_T
 
 
 
+
+
+
+
 ####################    pull player data       ##########################
 
 
 df_player = pd.read_csv('player_statistics.csv')
+
+
+#####################    print fixture quality tables      ##########################
+
+
+
+
+#print the attaxck and defense tables too for reference
+print("")
+print("---- Fixture Quality Tables ----")   
+
+print("---- Attack Table ----")
+
+print(df_attack.sort_values(by='Attack multiplier'))
+
+print("")
+print("---- Defense Table ----")
+print(df_defense.sort_values(by='Defense multiplier'))
+
+
 
 
 
@@ -83,9 +115,13 @@ df_players_final = df_merged[[
     'team_name',
     'position',
     'price',
+    'minutes',
     'total_points',
     'form',
     'points_per_game',
+    'creativity',
+    'threat',
+    'influence',
     'Attack multiplier',
     'Defense multiplier'
 ]]
@@ -102,18 +138,25 @@ df_attackers_mids = df_attackers_mids[[
     'team_name',
     'position',
     'price',
+    'minutes',
     'total_points',
     'form',
+    'creativity',
+    'threat',
     'points_per_game',
     'Attack multiplier' 
 ]]
 
-df_attackers_mids['attack_adjusted_points'] = (((df_attackers_mids['total_points']/(gameweek-1)) *0.5) + (df_attackers_mids['form']*0.5))         *      df_attackers_mids['Attack multiplier']
+df_attackers_mids['attack_adjusted_points'] = (((df_attackers_mids['total_points']/(gameweek-1)) *(1-form_weight)) + (df_attackers_mids['form']*form_weight))         *      df_attackers_mids['Attack multiplier']
 df_attackers_mids['attack_adj_pts_per_million'] = df_attackers_mids['attack_adjusted_points'] / df_attackers_mids['price']
+
+df_attackers_mids['creativity+threat']= (df_attackers_mids['creativity']*creativity_weight + df_attackers_mids['threat']* threat_weight)     *      df_attackers_mids['Attack multiplier']
+df_attackers_mids['creativity+threat/price']=df_attackers_mids['creativity+threat'] / df_attackers_mids['price']
+
 
 print("RAW")
 
-df_attackers_mids = df_attackers_mids.sort_values(by='attack_adjusted_points', ascending=False)
+df_attackers_mids = df_attackers_mids.sort_values(by='creativity+threat', ascending=False)
 
 print(df_attackers_mids.head(30))
 
@@ -121,7 +164,7 @@ print("")
 
 print("VALUE")
 
-df_attackers_mids = df_attackers_mids.sort_values(by='attack_adj_pts_per_million', ascending=False)
+df_attackers_mids = df_attackers_mids.sort_values(by='creativity+threat/price', ascending=False)
 
 print(df_attackers_mids.head(30))
 
@@ -145,7 +188,7 @@ df_gk_def = df_gk_def[[
     'Defense multiplier' 
 ]]
 
-df_gk_def['defense_adjusted_points'] = (((df_gk_def['total_points']/(gameweek-1)) *0.5) + (df_gk_def['form']*0.5))         *      df_gk_def['Defense multiplier']
+df_gk_def['defense_adjusted_points'] = (((df_gk_def['total_points']/(gameweek-1)) *(1-form_weight)) + (df_gk_def['form']*form_weight))         *      df_gk_def['Defense multiplier']
 df_gk_def['defense_adj_pts_per_million'] = df_gk_def['defense_adjusted_points'] / df_gk_def['price']
 
 print("RAW")
@@ -167,20 +210,67 @@ print(df_gk_def.head(30))
 
 
 
+mid_data = df_attackers_mids[df_attackers_mids['position'].isin(['MID'])]
+fwd_data = df_attackers_mids[df_attackers_mids['position'].isin(['FWD'])]
+gkp_data = df_gk_def[df_gk_def['position'].isin(['GKP'])]
+def_data = df_gk_def[df_gk_def['position'].isin(['DEF'])]
 
 
 
 
 
 
+################### create starting lineup  #########################
+
+def start_lineup():
+
+
+
+    # Sort by creativity+threat
+    mid_data_5 = mid_data.sort_values(by='creativity+threat', ascending=False).head(25)
+
+    fwd_data_3 = fwd_data.sort_values(by='creativity+threat', ascending=False).head(25)
+
+    def_data_5 = def_data.sort_values(by='defense_adjusted_points', ascending=False).head(25)
+
+    gkp_data_2 = gkp_data.sort_values(by='defense_adjusted_points', ascending=False).head(25)
+
+    start_15_df =pd.concat([
+        mid_data_5.head(5),
+        fwd_data_3.head(3),
+        def_data_5.head(5),
+        gkp_data_2.head(2)
+    ])
 
 
 
 
+    print(start_15_df) #best 15
+
+    current_val = start_15_df['price'].sum() #price of best 15
+
+    print("best 15- total price:   ", current_val) 
 
 
 
+    print("over budget- removing lowest value player")
 
+    #remove lowest value attack/mid player
+    lowest_value_player = start_15_df.loc[start_15_df['creativity+threat/price'].idxmin()]
+
+
+    print("removed: ", lowest_value_player)
+
+        #replace with next best mid/forward
+    if lowest_value_player['position'] == 'MID':
+        replacement_pool = df_mids_sorted[~df_mids_sorted.index.isin(start_15_df.index)]
+        next_best = replacement_pool.sort_values(by='creativity+threat/price', ascending=False).head(1)
+        start_15_df = pd.concat([start_15_df, next_best])
+    else:
+        ""
+    
+
+    start_15_df = start_15_df.drop(lowest_value_player.name)
 
 
 
