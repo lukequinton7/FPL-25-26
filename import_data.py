@@ -120,7 +120,14 @@ def fetch_fpl_player_stats(filename='fpl_player_stats.csv'):
             'ep_this': p.get('ep_this', 0),  # Expected pts this GW
             'ep_next': p.get('ep_next', 0),  # Expected pts next GW
             'selected_pct': round(float(p.get('selected_by_percent', 0)), 2),
-            'in_dreamteam': p['in_dreamteam']
+            'in_dreamteam': p['in_dreamteam'],
+
+
+            # --- NEW 2025/26 DEFENSIVE STATS ---
+            'tackles': p.get('tackles', 0),                  
+            'recoveries': p.get('recoveries', 0),            
+            'clearances_blocks_interceptions': p.get('clearances_blocks_interceptions', 0), # <-- THIS IS THE REAL FIELD
+            # --- END OF NEW STATS ---
         }
         players_data.append(player)
     

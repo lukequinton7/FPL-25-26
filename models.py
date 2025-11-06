@@ -32,6 +32,9 @@ Here is the attack player data table:
 
 give your answer only as the list of web_names of the top 5 midfielders, no other text.
 
+format guidelines:
+web_name1, web_name2, web_name3, web_name4, web_name5
+
 """
 
 
@@ -49,6 +52,9 @@ Here is the attack player data table:
 
 give your answer only as the list of web_names of the top 3 attackers, no other text.
 
+format guidelines:
+web_name1, web_name2, web_name3
+
 """
 
 # user prompt (defesnse selection)
@@ -64,6 +70,9 @@ Here is the defense player data table:
 {def_data.to_string()}
 
 give your answer only as the list of web_names of the top 5 defenders, no other text.
+
+format guidelines:
+web_name1, web_name2, web_name3, web_name4, web_name5
 
 """
 
@@ -81,34 +90,13 @@ Here is the defense player data table:
 
 give your answer only as the list of web_names of the top 2 goalkeepers, no other text.
 
-"""
-
-
-
-
-# user prompt (hollistic attempt)
-user_prompt = f"""You are an FPL (football/soccer game) expert. Your task is to analyse the following table of player data that shows fixture adjusted performance over the next X games and select the best/
- 5 midfieders (players with only position MID), 3 forwards (players with only position FWD), 5 defenders (players with only position DEF) and 2 goalkeepers (players with only position GKP) to form the best possible starting 15 player squad within a budget of 100.0.
-
-Rules: 
-- Consider 'creativity+threat' as a primary decision factor for midfielders and forwards.
-- Consider 'creativity+threat/price' as another primary decision factor for midfielders and forwards.
-- Consider 'defense_adjusted_points' as a primary decision factor for defenders and goalkeepers.
-- Consider 'defense_adjusted_points/price' as another primary decision factor for defenders and goalkeepers.
--Important- ensure budget doesn't go over 100.0 total price for the 15 players.
-
-
-Here is the attack player data table:
-
-{attack_data.to_string()}
-
-Here is the attack player data table:
-
-{defense_data.to_string()}
-
-give your answer only as the list of web_names of all 15 players, no other text.
+format guidelines:
+web_name1, web_name2
 
 """
+
+
+
 
 
 
@@ -136,12 +124,14 @@ def run_model(model, system_prompt, user_prompt):
 
     except Exception as e:
         print(f"An error occurred: {e}")
+    
+    return response.content
 
 
-run_model(model, system_prompt, gkp_prompt)
+gkp_string = run_model(model, system_prompt, gkp_prompt)
 
-run_model(model, system_prompt, def_prompt)
+def_string = run_model(model, system_prompt, def_prompt)
 
-run_model(model, system_prompt, mid_prompt)
+mid_string = run_model(model, system_prompt, mid_prompt)
 
-run_model(model, system_prompt, fwd_prompt)
+fwd_string = run_model(model, system_prompt, fwd_prompt)
