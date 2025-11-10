@@ -99,16 +99,16 @@ MatchNumber,RoundNumber,DateUtc,Location,HomeTeam,AwayTeam,Group,HomeTeamScore,A
 100,10,2025-11-02 14:00:00Z,London Stadium,West Ham,Newcastle,,3.0,1.0
 96,10,2025-11-02 16:30:00Z,Etihad Stadium,Man City,Bournemouth,,3.0,1.0
 98,10,2025-11-03 20:00:00Z,Stadium of Light,Sunderland,Everton,,1.0,1.0
-109,11,2025-11-08 12:30:00Z,Tottenham Hotspur Stadium,Spurs,Man Utd,,,
-105,11,2025-11-08 15:00:00Z,Hill Dickinson Stadium,Everton,Fulham,,,
-110,11,2025-11-08 15:00:00Z,London Stadium,West Ham,Burnley,,,
-108,11,2025-11-08 17:30:00Z,Stadium of Light,Sunderland,Arsenal,,,
-103,11,2025-11-08 20:00:00Z,Stamford Bridge,Chelsea,Wolves,,,
-101,11,2025-11-09 14:00:00Z,Villa Park,Aston Villa,Bournemouth,,,
-102,11,2025-11-09 14:00:00Z,Gtech Community Stadium,Brentford,Newcastle,,,
-104,11,2025-11-09 14:00:00Z,Selhurst Park,Crystal Palace,Brighton,,,
-107,11,2025-11-09 14:00:00Z,The City Ground,Nott'm Forest,Leeds,,,
-106,11,2025-11-09 16:30:00Z,Etihad Stadium,Man City,Liverpool,,,
+109,11,2025-11-08 12:30:00Z,Tottenham Hotspur Stadium,Spurs,Man Utd,,2.0,2.0
+105,11,2025-11-08 15:00:00Z,Hill Dickinson Stadium,Everton,Fulham,,2.0,0.0
+110,11,2025-11-08 15:00:00Z,London Stadium,West Ham,Burnley,,3.0,2.0
+108,11,2025-11-08 17:30:00Z,Stadium of Light,Sunderland,Arsenal,,2.0,2.0
+103,11,2025-11-08 20:00:00Z,Stamford Bridge,Chelsea,Wolves,,3.0,0.0
+101,11,2025-11-09 14:00:00Z,Villa Park,Aston Villa,Bournemouth,,4.0,0.0
+102,11,2025-11-09 14:00:00Z,Gtech Community Stadium,Brentford,Newcastle,,3.0,1.0
+104,11,2025-11-09 14:00:00Z,Selhurst Park,Crystal Palace,Brighton,,0.0,0.0
+107,11,2025-11-09 14:00:00Z,The City Ground,Nott'm Forest,Leeds,,3.0,1.0
+106,11,2025-11-09 16:30:00Z,Etihad Stadium,Man City,Liverpool,,3.0,0.0
 114,12,2025-11-22 12:30:00Z,Turf Moor,Burnley,Chelsea,,,
 112,12,2025-11-22 15:00:00Z,Vitality Stadium,Bournemouth,West Ham,,,
 113,12,2025-11-22 15:00:00Z,American Express Stadium,Brighton,Brentford,,,
