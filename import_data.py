@@ -12,25 +12,40 @@ def refresh_fixture_data():
     print(f"Attempting to download data from {URL}...")
 
     try:
-        # 1. Pandas can read a JSON URL directly into a DataFrame
-        df = pd.read_json(URL)
+        # Add headers to mimic a browser request and avoid 403 errors
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'application/json, text/plain, */*',
+            'Accept-Language': 'en-US,en;q=0.9',
+            'Referer': 'https://fixturedownload.com/',
+        }
+        
+        # Use requests library with headers instead of pandas direct read
+        response = requests.get(URL, headers=headers, timeout=30)
+        response.raise_for_status()  # Raise error for bad status codes
+        
+        # Convert JSON response to DataFrame
+        df = pd.DataFrame(response.json())
         
         print("Download successful. First 5 rows of data:")
         print(df.head())
         print("\n------------------------------\n")
 
-        # 2. Save the DataFrame to a CSV
+        # Save the DataFrame to a CSV
         df.to_csv(FILENAME, index=False)
         
         print(f"Successfully saved data to {FILENAME}")
+        return df
 
+    except requests.exceptions.HTTPError as e:
+        print(f"HTTP Error occurred: {e}")
+        print("The website may be blocking automated requests or the URL has changed.")
+        print("\nAlternative: You can manually download from https://fixturedownload.com/results/epl-2025/")
+        return None
     except Exception as e:
         print(f"An error occurred: {e}")
         print("Please check the URL and your internet connection.")
-
-
-
-
+        return None
 
 
 # Execute the data refresh functions

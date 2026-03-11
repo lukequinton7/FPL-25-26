@@ -103,12 +103,12 @@ def calculate_attack_score(df_table, df_unplayed, num_games):
     df_table['Opponent_GC_Avg'] = all_avg_opponent_gc
 
     scale_factor =  (df_table['Attack Score'] - df_table['Attack Score'].min()) / (df_table['Attack Score'].max() - df_table['Attack Score'].min())
-    df_table['Attack multiplier'] = 0.75 + (0.5* scale_factor)
+    df_table['Atk c'] = 0.75 + (0.5* scale_factor)
 
     # Round the new columns
     df_table['Attack Score'] = df_table['Attack Score'].round(2)
     df_table['Opponent_GC_Avg'] = df_table['Opponent_GC_Avg'].round(2)
-    df_table['Attack multiplier'] = df_table['Attack multiplier'].round(2)
+    df_table['Atk c'] = df_table['Atk c'].round(2)
     
     return df_table
 
@@ -172,13 +172,13 @@ def calculate_defense_score(df_table, df_unplayed, num_games):
     df_table['Opponent_GS_Avg'] = all_avg_opponent_gs
 
     scale_factor_d =  (df_table['Defense Score'].max() - df_table['Defense Score']) / (df_table['Defense Score'].max() - df_table['Defense Score'].min())
-    df_table['Defense multiplier'] = 0.75 + (0.5* scale_factor_d)
+    df_table['Def c'] = 0.75 + (0.5* scale_factor_d)
     
 
     # Round the new columns
     df_table['Defense Score'] = df_table['Defense Score'].round(2)
     df_table['Opponent_GS_Avg'] = df_table['Opponent_GS_Avg'].round(2)
-    df_table['Defense multiplier'] = df_table['Defense multiplier'].round(2)
+    df_table['Def c'] = df_table['Def c'].round(2)
 
     return df_table
 
